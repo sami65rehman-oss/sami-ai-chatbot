@@ -11,19 +11,19 @@ if not api_key:
         api_key = None
 
 if not api_key:
-    raise ValueError("⚠️ Gemini API key is not found!")
+    raise ValueError("Gemini API key was not found.")
 
 client = genai.Client(api_key=api_key)
 
-def get_gemini_response(prompt):
+def get_chat_response(chat_session, prompt):
     try:
-        # Strictly using gemini-2.5-flash to bypass 3.6 rate limits
-        response = client.models.generate_content_stream(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+        response = chat_session.send_message_stream(prompt)
         for chunk in response:
             if chunk.text:
                 yield chunk.text
     except Exception as e:
-        yield f"⚠️ API Error: {str(e)}"
+        error_msg = str(e)
+        if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
+            yield "Quota limit reached. Please wait one minute and try again."
+        else:
+            yield f"API Error: {error_msg}"
