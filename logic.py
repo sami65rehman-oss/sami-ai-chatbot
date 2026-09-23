@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from groq import Groq
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
 
 # Initialize Groq Client
@@ -13,7 +13,7 @@ def get_ai_response(messages_history):
     """Groq API ko call karta hai aur fast response return karta hai."""
     try:
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",  # Updated 100% working model
             messages=messages_history,
         )
         return response.choices[0].message.content
