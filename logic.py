@@ -10,10 +10,10 @@ api_key = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=api_key)
 
 def get_ai_response(messages_history):
-    """Groq API ko call karta hai aur fast response return karta hai."""
+    """Active Groq model se response generate karta hai."""
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-70b-versatile",  # Currently active production model
+            model="openai/gpt-oss-20b",  # Official active model according to Groq docs
             messages=messages_history,
         )
         return response.choices[0].message.content
