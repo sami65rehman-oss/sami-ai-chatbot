@@ -13,7 +13,7 @@ def get_ai_response(messages_history):
     """Groq API ko call karta hai aur fast response return karta hai."""
     try:
         response = client.chat.completions.create(
-            model="llama-3.1-8b-instant",  # Updated 100% working model
+            model="llama3-8b-8192",  # Direct Groq Llama 3 model ID
             messages=messages_history,
         )
         return response.choices[0].message.content
