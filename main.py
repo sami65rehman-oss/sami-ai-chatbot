@@ -1,28 +1,39 @@
 import streamlit as st
-from logic import client, get_chat_response
+from logic import get_ai_response
 
 st.set_page_config(page_title="Sami.AI", page_icon="🤖")
 
 st.title("🤖 Sami.AI")
-st.caption("AI Assistant powered by Gemini 3.6 Flash")
+st.caption("AI Assistant powered by Groq & Llama 3")
 
-if "chat" not in st.session_state:
-    st.session_state.chat = client.chats.create(model="gemini-3.6-flash")
-
+# Initialize chat history in session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# Display previous chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-if prompt := st.chat_input("Hello, I am Sami.AI. How can I help you today?"):
+# Handle User Input
+if prompt := st.chat_input("Ask Sami.AI..."):
+    # Add user message to UI & session state
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Get response from AI logic file
     with st.chat_message("assistant"):
-        response_generator = get_chat_response(st.session_state.chat, prompt)
-        response_text = st.write_stream(response_generator)
-    
-    st.session_state.messages.append({"role": "assistant", "content": response_text})
+        with st.spinner("Thinking..."):
+            # Format messages history for Groq
+            formatted_history = [
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ]
+            
+            # Call logic.py function
+            reply = get_ai_response(formatted_history)
+            st.markdown(reply)
+            
+    # Save assistant response to session state
+    st.session_state.messages.append({"role": "assistant", "content": reply})
